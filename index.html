@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌕 Đêm Trung Thu Đại Tiệc Ánh Sáng 🎑</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 20%, #1a2639, #000);
+    height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+    color: #fff;
+  }
+
+  #background-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    display: none;
+  }
+
+  .moon {
+    position: absolute;
+    top: 40px;
+    right: 100px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fffbd5, #fefcea 60%, #f6e58d);
+    box-shadow: 0 0 80px 25px rgba(255,255,200,0.5);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .characters {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #fffbe6;
+    animation: float 3s ease-in-out infinite alternate;
+  }
+  .characters img { width: 80px; height: auto; }
+  @keyframes float { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: twinkle 2s infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.2; } to { opacity: 1; } }
+
+  .cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    animation: moveClouds 60s linear infinite;
+    z-index: 0;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: inherit;
+  }
+  .cloud::before { width: 50%; height: 100%; top: -25%; left: -25%; }
+  .cloud::after  { width: 70%; height: 100%; top: 25%; left: 50%; }
+  @keyframes moveClouds { from { transform: translateX(-200px); } to { transform: translateX(120vw); } }
+
+  .lantern {
+    position: absolute;
+    width: 55px;
+    height: 75px;
+    border-radius: 25px;
+    animation: floatUp linear infinite;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  .lantern:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 40px 10px rgba(255, 255, 255, 0.7);
+  }
+  .lantern::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background: gold;
+    transform: translateX(-50%);
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-150px); opacity: 0; }
+  }
+
+  .message-box {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.15);
+    border: 2px solid gold;
+    border-radius: 15px;
+    padding: 20px 40px;
+    font-size: 1.3em;
+    text-align: center;
+    color: #fff7cc;
+    box-shadow: 0 0 25px gold;
+    backdrop-filter: blur(10px);
+    display: none;
+    animation: fadeInOut 3s ease-in-out forwards;
+    z-index: 3;
+  }
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    20%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
+
+  .hint {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.3em;
+    color: #ffeaa7;
+    text-shadow: 0 0 10px gold;
+    animation: glow 2s infinite alternate;
+    z-index: 4;
+  }
+  @keyframes glow { from { opacity: 0.6; } to { opacity: 1; } }
+
+  .control-btn {
+    position: absolute;
+    top: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid gold;
+    color: gold;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    z-index: 10;
+    transition: 0.3s;
+  }
+  #music-control { left: 20px; }
+  #video-control { left: 160px; }
+  .control-btn:hover { background: rgba(255,255,255,0.2); }
+
+  .firework {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<video id="background-video" autoplay muted loop playsinline></video>
+
+<div class="moon">
+  <div class="characters">
+    <img src="https://cdn-icons-png.flaticon.com/512/9381/9381340.png" alt="Cuội">
+    <div>👩🏻‍🦰 Chị Hằng & 🧑🏻‍🌾 Chú Cuội</div>
+  </div>
+</div>
+
+<div id="container"></div>
+<div id="message" class="message-box"></div>
+<div class="hint">🎋 Hãy click vào đèn lồng đi nhé hihi 🎑</div>
+
+<button id="music-control" class="control-btn">🔈 Bật nhạc</button>
+<button id="video-control" class="control-btn">🎥 Tắt video</button>
+
+<audio id="music" loop>
+  <source src="nhac.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const container = document.getElementById('container');
+const messageBox = document.getElementById('message');
+const music = document.getElementById('music');
+const musicControl = document.getElementById('music-control');
+const videoControl = document.getElementById('video-control');
+const video = document.getElementById('background-video');
+
+const wishes = [
+  "🌕 Trung Thu vui vẻ nha, tràn ngập tiếng cười và yêu thương!",
+  "🍰 Bánh nướng, bánh dẻo – chúc em luôn ngọt ngào như mật ong!",
+  "🎑 Đêm trăng sáng, lòng người cũng sáng!",
+  "💫 KK, dạo này thức khuya hơi nhiều đó nha, máy tính mệt rồi đi ngủ sớm đi nha",
+  "🌸 Trăng tròn, tình trọn, niềm vui đầy!",
+  "🌕 Chúc em và gia đình an lành, sum vầy bên ánh trăng!",
+  "🧧 Trung Thu hạnh phúc, vui như trẻ nhỏ, ngọt như bánh nướng nha hihi!",
+  "🎉 Mong điều tốt đẹp nhất luôn đến với em trong mùa trăng này!"
+];
+
+let isMusicPlaying = false;
+let isVideoVisible = false;
+let hasActivatedSound = false;
+
+// Gán video và cho chạy muted
+video.src = "video.mp4";
+video.muted = true;
+video.play().catch(() => {});
+
+// Khi video có thể phát -> hiển thị
+video.addEventListener('canplay', () => {
+  video.style.display = "block";
+  isVideoVisible = true;
+});
+
+// Nếu video lỗi -> bật nhạc thay thế
+video.addEventListener('error', () => {
+  video.style.display = "none";
+  startMusic();
+});
+
+// 🔊 Khi người dùng click lần đầu -> bật âm thanh video
+document.addEventListener('click', () => {
+  if (!hasActivatedSound) {
+    hasActivatedSound = true;
+    // Cho phép âm thanh video
+    video.muted = false;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Nếu vẫn bị chặn, bật nhạc dự phòng
+        startMusic();
+      });
+    }
+  }
+});
+
+// Nút nhạc
+musicControl.addEventListener('click', () => {
+  if (!isMusicPlaying) {
+    startMusic();
+    video.muted = true;
+    musicControl.textContent = "🔊 Tắt nhạc";
+  } else {
+    stopMusic();
+    video.muted = false;
+    musicControl.textContent = "🔈 Bật nhạc";
+  }
+  isMusicPlaying = !isMusicPlaying;
+});
+
+// Nút video
+videoControl.addEventListener('click', () => {
+  if (isVideoVisible) {
+    video.pause();
+    video.style.display = "none";
+    startMusic();
+    videoControl.textContent = "🎥 Bật video";
+  } else {
+    video.style.display = "block";
+    video.play().catch(()=>{});
+    stopMusic();
+    videoControl.textContent = "🎥 Tắt video";
+  }
+  isVideoVisible = !isVideoVisible;
+});
+
+function startMusic() {
+  music.play().catch(()=>{});
+  isMusicPlaying = true;
+  musicControl.textContent = "🔊 Tắt nhạc";
+}
+function stopMusic() {
+  music.pause();
+  isMusicPlaying = false;
+  musicControl.textContent = "🔈 Bật nhạc";
+}
+
+// ==== phần hiệu ứng sao, đèn lồng, mây, pháo hoa ====
+for (let i = 0; i < 5; i++) {
+  const cloud = document.createElement('div');
+  cloud.className = 'cloud';
+  cloud.style.width = 200 + Math.random()*200 + 'px';
+  cloud.style.height = 60 + Math.random()*20 + 'px';
+  cloud.style.top = 50 + Math.random()*250 + 'px';
+  cloud.style.left = Math.random()*100 + 'vw';
+  cloud.style.animationDelay = (-Math.random()*60) + 's';
+  container.appendChild(cloud);
+}
+
+for (let i = 0; i < 80; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.left = Math.random() * 100 + 'vw';
+  star.style.top = Math.random() * 100 + 'vh';
+  star.style.animationDelay = Math.random() * 2 + 's';
+  container.appendChild(star);
+}
+
+function createLantern() {
+  const lantern = document.createElement('div');
+  lantern.className = 'lantern';
+  lantern.style.left = Math.random() * 90 + 'vw';
+  lantern.style.animationDuration = 10 + Math.random() * 10 + 's';
+
+  const colors = [
+    ["#ff7675", "#d63031"],
+    ["#fdcb6e", "#e17055"],
+    ["#74b9ff", "#0984e3"],
+    ["#55efc4", "#00b894"],
+    ["#a29bfe", "#6c5ce7"]
+  ];
+  const c = colors[Math.floor(Math.random()*colors.length)];
+  lantern.style.background = `radial-gradient(circle at 50% 30%, ${c[0]}, ${c[1]})`;
+  lantern.style.boxShadow = `0 0 25px 8px ${c[0]}88`;
+
+  lantern.addEventListener('click', () => {
+    showMessage();
+    createFirework();
+  });
+  container.appendChild(lantern);
+  setTimeout(() => lantern.remove(), 20000);
+}
+
+function showMessage() {
+  const wish = wishes[Math.floor(Math.random() * wishes.length)];
+  messageBox.innerText = wish;
+  messageBox.style.display = 'block';
+  messageBox.style.animation = 'none';
+  void messageBox.offsetWidth;
+  messageBox.style.animation = 'fadeInOut 3s ease-in-out forwards';
+}
+
+function createFirework() {
+  for (let i = 0; i < 20; i++) {
+    const f = document.createElement('div');
+    f.className = 'firework';
+    const x = window.innerWidth/2 + (Math.random()-0.5)*300;
+    const y = 100 + Math.random()*100;
+    const size = Math.random()*8 + 4;
+    f.style.width = size + 'px';
+    f.style.height = size + 'px';
+    f.style.background = `hsl(${Math.random()*360},100%,70%)`;
+    f.style.left = x + 'px';
+    f.style.top = y + 'px';
+    container.appendChild(f);
+    const dx = (Math.random()-0.5)*200;
+    const dy = (Math.random()-0.5)*200;
+    f.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }],
+              { duration: 1200, easing: 'ease-out', fill: 'forwards' });
+    setTimeout(()=>f.remove(), 1300);
+  }
+}
+
+document.addEventListener('click', (e)=>{
+  const heart = document.createElement('div');
+  heart.textContent = '💖';
+  heart.style.position = 'absolute';
+  heart.style.left = e.pageX + 'px';
+  heart.style.top = e.pageY + 'px';
+  heart.style.fontSize = '20px';
+  heart.style.pointerEvents = 'none';
+  heart.style.animation = 'floatHeart 1.5s ease-out forwards';
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),1500);
+});
+
+const style = document.createElement('style');
+style.textContent = `
+@keyframes floatHeart {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-50px); opacity: 0; }
+}`;
+document.head.appendChild(style);
+
+setInterval(createLantern, 800);
+</script>
+<div id="sound-hint" style="
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(0,0,0,0.5); color: #ffd;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 1.1em; box-shadow: 0 0 10px gold;
+  animation: fadeHint 3s ease-in-out forwards;
+  z-index: 9999;
+">🔊 Nhấn vào màn hình để bật âm thanh 🎶</div>
+
+<style>
+@keyframes fadeHint {
+  0% { opacity: 0; transform: translateY(-10px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+</style>
+
+<script>
+setTimeout(() => {
+  const hint = document.getElementById('sound-hint');
+  if (hint) hint.remove();
+}, 5000);
+</script>
+
+</body>
+</html>
